@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
@@ -56,6 +57,24 @@ public class CarTest {
 
         assertEquals(1, interfaces.size());
         assertTrue(interfaces.contains(Comparable.class));
+    }
+
+    @Test
+    void compareToWorksFine() throws NoSuchFieldException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        // car.age = 10
+        Field PriceField = car.getClass().getDeclaredField("Price");
+        PriceField.setAccessible(true);
+        PriceField.set(car, 10);
+
+        Car other = new Car();
+        PriceField.set(other, 20);
+
+        // car.compareTo(other)
+        Method compareToMethod = car.getClass().getDeclaredMethod("compareTo", Car.class);
+        Object retVal = compareToMethod.invoke(car, other);
+        int actualRetVal = (int)retVal;
+
+        assertEquals(-10, actualRetVal);
     }
 
 }
